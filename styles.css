@@ -1,0 +1,19 @@
+:root {}
+
+html,
+body {
+	margin: 0px;
+	overscroll-behavior: none; /*this stops the back swipe*/
+}
+
+.main {
+  border: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+.controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
