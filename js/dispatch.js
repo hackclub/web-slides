@@ -7,6 +7,7 @@ async function checkURL(href, state) {
 
 	const search = window.location.search;
 	const pages = new URLSearchParams(search).get("pages");
+	let index = Number(new URLSearchParams(search).get("index")) || 0;
 
 	if (pages) {
 		let link = pages;
@@ -18,8 +19,18 @@ async function checkURL(href, state) {
 
 		state.defaultPath = json.defaultPath;
 		state.pages = json.pages;
+	}
 
-		dispatch("GOTO_PAGE", { index: 0 });
+	if (index !== undefined) {
+		if (state.pages.length === 0) return;
+		if (index < 0) return;
+		if (index >= state.pages.length) return;
+
+		state.index = index;
+		const src = state.pages[index];
+		document.querySelector("iframe").src = src;
+
+		dispatch("RENDER");
 	}
 
 }
@@ -38,15 +49,14 @@ const ACTIONS = {
 		checkURL(window.location.href, state);
 	},
 	GOTO_PAGE({ index }, state) {
-		// set iframe source
 		if (state.pages.length === 0) return;
 		if (index < 0) return;
 		if (index >= state.pages.length) return;
 
-		state.index = index;
-		const src = state.pages[index];
-
-		document.querySelector("iframe").src = src;
+		const search = window.location.search;
+		const newSearch = search.includes("index=") ? search.replace(/index=\d+/, `index=${index}`) : `${search}&index=${index}`;
+		window.location.search = newSearch;
+		// window.history.pushState("", "", newSearch);
 	},
 	NEXT(args, state) { 
 		dispatch("GOTO_PAGE", { index: state.index + 1 });
